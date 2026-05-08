@@ -95,4 +95,30 @@ public class PermissionController {
     public Result<List<Permission>> listByUser(@PathVariable Long userId) {
         return Result.success(permissionService.listByUserId(userId));
     }
+
+    /**
+     * 获取用户的菜单树（只返回菜单类型，用于前端动态生成菜单）
+     */
+    @ApiOperation("获取用户的菜单树")
+    @GetMapping("/menu/{userId}")
+    public Result<List<Permission>> menuTree(@PathVariable Long userId) {
+        List<Permission> userPerms = permissionService.listByUserId(userId);
+        // 只保留菜单类型 (permType=1)
+        List<Permission> menuPerms = userPerms.stream()
+                .filter(p -> p.getPermType() == 1)
+                .collect(java.util.stream.Collectors.toList());
+
+        // 构建树形结构
+        return Result.success(menuPerms.stream()
+                .filter(p -> p.getParentId() == 0 || p.getParentId() == null)
+                .peek(p -> p.setChildren(buildChildren(p.getId(), menuPerms)))
+                .collect(java.util.stream.Collectors.toList()));
+    }
+
+    private List<Permission> buildChildren(Long parentId, List<Permission> allPerms) {
+        return allPerms.stream()
+                .filter(p -> parentId.equals(p.getParentId()))
+                .peek(p -> p.setChildren(buildChildren(p.getId(), allPerms)))
+                .collect(java.util.stream.Collectors.toList());
+    }
 }

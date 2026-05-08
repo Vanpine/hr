@@ -24,7 +24,8 @@
             <i class="el-icon-user"></i>
             <span slot="title">员工管理</span>
           </el-menu-item>
-          <el-menu-item index="/department">
+          <!-- 部门管理：管理员和部门负责人可见 -->
+          <el-menu-item v-if="isAdmin" index="/department">
             <i class="el-icon-s-order"></i>
             <span slot="title">部门管理</span>
           </el-menu-item>
@@ -36,7 +37,8 @@
             <i class="el-icon-s-check"></i>
             <span slot="title">角色管理</span>
           </el-menu-item>
-          <el-menu-item index="/permission">
+          <!-- 权限管理：管理员和部门负责人可见 -->
+          <el-menu-item v-if="isAdmin" index="/permission">
             <i class="el-icon-s-flag"></i>
             <span slot="title">权限管理</span>
           </el-menu-item>
@@ -52,6 +54,9 @@
           </div>
           <div class="header-right">
             <span class="username">{{ userInfo.username || '管理员' }}</span>
+            <span class="role-tag" v-if="roleCodes.length > 0">
+              {{ formatRoleCodes(roleCodes) }}
+            </span>
             <el-dropdown @command="handleCommand">
               <span class="el-dropdown-link">
                 <i class="el-icon-arrow-down"></i>
@@ -84,7 +89,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userInfo'])
+    ...mapGetters(['userInfo', 'roleCodes', 'isAdmin'])
   },
   watch: {
     $route(to) {
@@ -107,6 +112,14 @@ export default {
           })
         })
       }
+    },
+    formatRoleCodes(codes) {
+      const roleMap = {
+        'ADMIN': '管理员',
+        'HR_MANAGER': '部门负责人',
+        'EMPLOYEE': '员工'
+      }
+      return codes.map(code => roleMap[code] || code).join('/')
     }
   }
 }
@@ -162,6 +175,15 @@ export default {
 .username {
   margin-right: 10px;
   color: #606266;
+}
+
+.role-tag {
+  margin-right: 15px;
+  padding: 2px 8px;
+  font-size: 12px;
+  color: #409EFF;
+  background-color: #ecf5ff;
+  border-radius: 4px;
 }
 
 .el-dropdown-link {

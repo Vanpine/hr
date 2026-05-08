@@ -60,12 +60,16 @@ export default {
           this.loading = true
           login(this.loginForm)
             .then(res => {
+              // 后端返回格式：{ code: 200, message: 'success', data: { user: {...}, roleCodes: [...], permCodes: [...] } }
+              // request 拦截器已经处理过，res 就是 data 部分
+              console.log('登录返回:', res)
               this.$store.dispatch('login', res.data).then(() => {
                 this.$message.success('登录成功')
                 this.$router.push('/')
               })
             })
-            .catch(() => {
+            .catch(error => {
+              console.error('登录失败:', error)
               this.loading = false
             })
         }

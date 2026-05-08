@@ -1,6 +1,7 @@
--- 人事管理系统数据库初始化脚本
--- 数据库字符集：utf8mb4
+-- 初始化人事管理系统数据库
+-- 执行方式：mysql -h 120.26.30.114 -u root -p < init_db.sql
 
+-- 创建数据库
 CREATE DATABASE IF NOT EXISTS hr_system DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE hr_system;
 
@@ -50,7 +51,7 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '用户 ID',
     `username` VARCHAR(50) NOT NULL COMMENT '用户名',
-    `password` VARCHAR(100) NOT NULL COMMENT '密码',
+    `password` VARCHAR(100) NOT NULL COMMENT '密码 (BCrypt 加密)',
     `real_name` VARCHAR(50) DEFAULT NULL COMMENT '真实姓名',
     `phone` VARCHAR(20) DEFAULT NULL COMMENT '手机号',
     `email` VARCHAR(50) DEFAULT NULL COMMENT '邮箱',
@@ -145,9 +146,8 @@ INSERT INTO `employee` (`emp_no`, `name`, `gender`, `phone`, `email`, `dept_id`,
 ('E0004', '赵六', 0, '13800138004', 'zhaoliu@example.com', 3, '人事经理', '2023-02-01', 1),
 ('E0005', '钱七', 0, '13800138005', 'qianqi@example.com', 4, '财务经理', '2023-01-15', 1);
 
--- 用户数据（默认密码 123456，使用 BCrypt 加密）
+-- 用户数据（默认密码：123456，使用 BCrypt 加密）
 -- BCrypt 哈希：$2a$10$DPpdT/e7.H9OngvEP4Ep0OlaHKQt81ebtQI93OtQpRqe9bn4IZZa6
--- 可以使用 PasswordGenerator 工具类生成新的哈希：mvn exec:java -Dexec.mainClass="com.hr.util.PasswordGenerator" -Dexec.args="密码"
 INSERT INTO `user` (`username`, `password`, `real_name`, `phone`, `email`, `status`) VALUES
 ('admin', '$2a$10$DPpdT/e7.H9OngvEP4Ep0OlaHKQt81ebtQI93OtQpRqe9bn4IZZa6', '系统管理员', '13800000000', 'admin@example.com', 1),
 ('user1', '$2a$10$DPpdT/e7.H9OngvEP4Ep0OlaHKQt81ebtQI93OtQpRqe9bn4IZZa6', '普通员工', '13800000001', 'user1@example.com', 1),

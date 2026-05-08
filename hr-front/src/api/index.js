@@ -222,3 +222,18 @@ export function login(data) {
     data
   })
 }
+
+// 用户角色管理 API
+export function getUserRoleCodes(userId) {
+  return request({
+    url: `/user/${userId}/roles`,
+    method: 'get'
+  })
+}
+
+export function getUserMenuTree(userId) {
+  return request({
+    url: `/permission/menu/${userId}`,
+    method: 'get'
+  })
+}
